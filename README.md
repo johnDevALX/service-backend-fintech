@@ -11,7 +11,7 @@ A Java-based backend service for financial technology applications, providing se
 
 ### Loan Management
 - Loan application processing
-- Status tracking (approved/rejected/repaid)
+- Status tracking (approved/rejected/completed/pending)
 - Dynamic interest rate calculation
 - User loan history
 
@@ -51,13 +51,13 @@ A Java-based backend service for financial technology applications, providing se
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/your-org/fintech-service.git
+git clone https://github.com/johnDevALX/service-backend-fintech
 cd fintech-service
 ```
 
 2. Configure database:
 ```bash
-cp src/main/resources/application.example.yml src/main/resources/application.yml
+cp src/main/resources/application.properties
 # Update database credentials in application.yml
 ```
 
@@ -79,7 +79,7 @@ Access Swagger UI through any of these URLs:
 Run tests:
 ```bash
 mvn test                 # Unit tests
-mvn verify              # Integration tests
+mvn verify              
 ```
 
 ## Database Schema
@@ -92,9 +92,9 @@ Key entities:
 
 ## Security Considerations
 
-- All endpoints except /auth/** require authentication
+- All endpoints except /v1/user/** require authentication
 - Passwords are hashed using BCrypt
-- API rate limiting: 100 requests/minute
+- API rate limiting: 5 requests/minute
 - Role-based endpoint restrictions
 
 ## Monitoring

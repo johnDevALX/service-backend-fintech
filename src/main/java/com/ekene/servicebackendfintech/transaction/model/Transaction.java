@@ -1,6 +1,7 @@
 package com.ekene.servicebackendfintech.transaction.model;
 
 import com.ekene.servicebackendfintech.transaction.enums.TransactionType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -38,7 +39,9 @@ public class Transaction {
 
     private String userId;
 
+    @Column(unique = true)
     private String transactionReference;
+    private String disbursementReference;
 
     private BigDecimal amount;
     @Enumerated(EnumType.STRING)

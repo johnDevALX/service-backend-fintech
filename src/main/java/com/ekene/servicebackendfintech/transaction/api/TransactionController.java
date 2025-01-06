@@ -2,6 +2,7 @@ package com.ekene.servicebackendfintech.transaction.api;
 
 import com.ekene.servicebackendfintech.transaction.model.Transaction;
 import com.ekene.servicebackendfintech.transaction.service.TransactionService;
+import com.ekene.servicebackendfintech.utils.ApiResponse;
 import com.ekene.servicebackendfintech.utils.DateUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -18,9 +19,10 @@ public class TransactionController {
     private final TransactionService transactionService;
 
     @GetMapping("statement")
-    public ResponseEntity<Page<Transaction>> getStatement(@RequestParam String userId, @RequestParam String from,
-                                                          @RequestParam String to, @RequestParam int size,
-                                                          @RequestParam int length){
-        return ResponseEntity.ok(transactionService.generateStatement(userId, DateUtil.convertStringToLocalDate(from), DateUtil.convertStringToLocalDate(to), size, length));
+    public ResponseEntity<ApiResponse<Page<Transaction>>> getStatement(@RequestParam String userId, @RequestParam String from,
+                                                                       @RequestParam String to, @RequestParam int size,
+                                                                       @RequestParam int length){
+        return transactionService.generateStatement(userId,
+                DateUtil.convertStringToLocalDate(from), DateUtil.convertStringToLocalDate(to), size, length);
     }
 }

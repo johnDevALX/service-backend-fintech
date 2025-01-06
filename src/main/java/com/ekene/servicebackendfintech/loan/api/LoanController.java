@@ -3,7 +3,9 @@ package com.ekene.servicebackendfintech.loan.api;
 import com.ekene.servicebackendfintech.auth.CustomUser;
 import com.ekene.servicebackendfintech.loan.model.Loan;
 import com.ekene.servicebackendfintech.loan.payload.LoanRequest;
+import com.ekene.servicebackendfintech.loan.payload.LoanResponse;
 import com.ekene.servicebackendfintech.loan.service.LoanService;
+import com.ekene.servicebackendfintech.utils.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,20 +30,18 @@ public class LoanController {
 
     @PostMapping("apply")
 //    @RateLimiter(name = "loanApplication")
-    public ResponseEntity<Loan> applyForLoan(@AuthenticationPrincipal CustomUser user, @Valid @RequestBody LoanRequest request) {
-        return ResponseEntity.ok(loanService.applyForLoan(request, user.getUsername()));
+    public ResponseEntity<ApiResponse<LoanResponse>> applyForLoan(@AuthenticationPrincipal CustomUser user, @Valid @RequestBody LoanRequest request) {
+        return loanService.applyForLoan(request, user.getUsername());
     }
 
     @PutMapping("repay")
-    public ResponseEntity<?> repayLoan(@RequestParam String transactionReference, @RequestParam BigDecimal repaymentAmount,
+    public ResponseEntity<ApiResponse<LoanResponse>> repayLoan(@RequestParam String transactionReference, @RequestParam BigDecimal repaymentAmount,
                                     @AuthenticationPrincipal CustomUser user){
-        loanService.updateLoanRepayment(transactionReference, repaymentAmount, user.getUsername());
-        return ResponseEntity.ok("Repaid");
-
+        return loanService.updateLoanRepayment(transactionReference, repaymentAmount, user.getUsername());
     }
 
     @GetMapping("/get-loan")
-    public ResponseEntity<Loan> getUserLoans(@AuthenticationPrincipal CustomUser user, @RequestParam String transactionReference) {
-        return ResponseEntity.ok(loanService.getUserLoans(user.getUsername(), transactionReference));
+    public ResponseEntity<ApiResponse<LoanResponse>> getUserLoans(@AuthenticationPrincipal CustomUser user, @RequestParam String transactionReference) {
+        return loanService.getUserLoans(user.getUsername(), transactionReference);
     }
 }

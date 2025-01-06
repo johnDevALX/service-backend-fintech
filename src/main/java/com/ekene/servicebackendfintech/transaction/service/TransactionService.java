@@ -1,19 +1,24 @@
 package com.ekene.servicebackendfintech.transaction.service;
 
+import com.ekene.servicebackendfintech.loan.payload.LoanResponse;
 import com.ekene.servicebackendfintech.transaction.enums.TransactionType;
 import com.ekene.servicebackendfintech.transaction.model.Transaction;
 import com.ekene.servicebackendfintech.transaction.payload.TransactionRequest;
 import com.ekene.servicebackendfintech.transaction.repository.TransactionRepository;
+import com.ekene.servicebackendfintech.utils.ApiResponse;
 import com.ekene.servicebackendfintech.utils.ValidationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Service
 @Transactional
@@ -35,12 +40,16 @@ public class TransactionService {
                 .userId(userId)
                 .transactionReference(request.getTransactionReference()).build();
 
+
+
         log.info("Recording transaction for loan: {}", request.getTransactionReference());
         transactionRepository.save(transaction);
     }
 
-    public Page<Transaction> generateStatement(String userId, LocalDate from, LocalDate to, int size, int length) {
+    public ResponseEntity<ApiResponse<Page<Transaction>>> generateStatement(String userId, LocalDate from, LocalDate to, int size, int length) {
         Pageable pageRequest = PageRequest.of(size, length);
-        return transactionRepository.findByUserIdAndDateRange(userId, from, to, pageRequest);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new ApiResponse<>("Successfully Fetched User statement",
+                        LocalDateTime.now(), transactionRepository.findByUserIdAndDateRange(userId, from, to, pageRequest)));
     }
 }

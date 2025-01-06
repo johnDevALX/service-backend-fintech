@@ -3,12 +3,10 @@ package com.ekene.servicebackendfintech.config;
 import com.ekene.servicebackendfintech.auth.CustomUserService;
 import com.ekene.servicebackendfintech.auth.JwtAuthFilter;
 import com.ekene.servicebackendfintech.auth.RestAuthenticationEntryPoint;
-import io.swagger.v3.oas.models.Components;
-import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.info.Info;
-import io.swagger.v3.oas.models.security.SecurityRequirement;
-import io.swagger.v3.oas.models.security.SecurityScheme;
 import lombok.RequiredArgsConstructor;
+import io.github.bucket4j.Bandwidth;
+import io.github.bucket4j.Bucket;
+import io.github.bucket4j.Refill;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -27,7 +25,10 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.time.Duration;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Configuration
 @RequiredArgsConstructor
@@ -37,6 +38,14 @@ public class SecurityTokenConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
     private final CustomUserService customUserService;
+
+    private final Map<String, Bucket> buckets = new ConcurrentHashMap<>();
+
+    @Bean
+    public Bucket createNewBucket() {
+        Bandwidth limit = Bandwidth.classic(5, Refill.intervally(5, Duration.ofMinutes(1)));
+        return Bucket.builder().addLimit(limit).build();
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -51,6 +60,7 @@ public class SecurityTokenConfig {
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint(new RestAuthenticationEntryPoint())
                 )
+                .addFilterBefore(new RateLimitFilter(buckets, this::createNewBucket), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .authenticationProvider(authenticationProvider())
                 .build();
