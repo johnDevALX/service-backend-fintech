@@ -1,4 +1,4 @@
-package com.ekene.onlinebookstore.config;
+package com.ekene.servicebackendfintech.config;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

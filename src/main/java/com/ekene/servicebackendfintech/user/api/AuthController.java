@@ -1,10 +1,11 @@
-package com.ekene.onlinebookstore.api;
+package com.ekene.servicebackendfintech.user.api;
 
 
-import com.ekene.onlinebookstore.user.AuthService;
-import com.ekene.onlinebookstore.user.util.AuthPayload;
-import com.ekene.onlinebookstore.user.util.UserDto;
-import com.ekene.onlinebookstore.utils.BaseController;
+import com.ekene.servicebackendfintech.user.payload.AuthPayload;
+import com.ekene.servicebackendfintech.user.payload.UserDto;
+import com.ekene.servicebackendfintech.user.service.UserService;
+import com.ekene.servicebackendfintech.utils.BaseController;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,15 +18,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RequestMapping("/v1/user/")
 public class AuthController extends BaseController {
-    private final AuthService authService;
+    private final UserService userService;
 
     @PostMapping("create")
-    public ResponseEntity<?> createUser(@RequestBody UserDto userDto){
-        return getAppResponse(HttpStatus.CREATED, "Successful", authService.createLmsUser(userDto));
+    public ResponseEntity<?> createUser(@Valid @RequestBody UserDto userDto){
+        return getAppResponse(HttpStatus.CREATED, "Successful", userService.createUser(userDto));
     }
 
     @PostMapping("authenticate")
-    public ResponseEntity<?> authenticateUser(@RequestBody AuthPayload authPayload){
-        return getAppResponse(HttpStatus.OK, "Authenticated", authService.authenticateUser(authPayload));
+    public ResponseEntity<?> authenticateUser(@Valid @RequestBody AuthPayload authPayload){
+        return getAppResponse(HttpStatus.OK, "Authenticated", userService.authenticateUser(authPayload));
     }
 }

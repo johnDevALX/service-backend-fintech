@@ -1,4 +1,4 @@
-package com.ekene.onlinebookstore.user.util;
+package com.ekene.servicebackendfintech.user.payload;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,4 +1,4 @@
-package com.ekene.onlinebookstore.utils;
+package com.ekene.servicebackendfintech.utils;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

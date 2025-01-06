@@ -1,6 +1,6 @@
-package com.ekene.onlinebookstore.auth;
+package com.ekene.servicebackendfintech.auth;
 
-import com.ekene.onlinebookstore.config.AppConfig;
+import com.ekene.servicebackendfintech.config.AppConfig;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;

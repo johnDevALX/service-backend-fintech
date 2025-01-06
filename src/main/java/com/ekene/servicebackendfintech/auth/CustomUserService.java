@@ -1,8 +1,8 @@
-package com.ekene.onlinebookstore.auth;
+package com.ekene.servicebackendfintech.auth;
 
 
-import com.ekene.onlinebookstore.user.model.ObsUser;
-import com.ekene.onlinebookstore.user.repository.UserRepository;
+import com.ekene.servicebackendfintech.user.model.FintechUser;
+import com.ekene.servicebackendfintech.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -17,7 +17,7 @@ public class CustomUserService implements UserDetailsService {
     private final UserRepository userRepository;
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<ObsUser> user = userRepository.findObsUserByEmailIgnoreCase(username);
-        return user.map(CustomUser::new).orElseThrow(() -> new UsernameNotFoundException("User not found " + username));
+        Optional<FintechUser> user = userRepository.findByEmailIgnoreCase(username);
+        return user.map(CustomUser::new).orElseThrow(() -> new UsernameNotFoundException("User with " + username + " not found!"));
     }
 }

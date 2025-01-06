@@ -3,6 +3,9 @@ package com.ekene.servicebackendfintech.user.service;
 
 import com.ekene.servicebackendfintech.auth.JwtUtil;
 import com.ekene.servicebackendfintech.user.model.FintechUser;
+import com.ekene.servicebackendfintech.user.payload.AuthPayload;
+import com.ekene.servicebackendfintech.user.payload.ReturnObj;
+import com.ekene.servicebackendfintech.user.payload.UserDto;
 import com.ekene.servicebackendfintech.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,20 +21,23 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class AuthService {
+public class UserService {
+    private static final String PREFIX = "FTH";
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
 
-    public ReturnObj createLmsUser (UserDto userDto){
-        ObsUser.ObsUserBuilder builder = ObsUser.builder();
+    public ReturnObj createUser (UserDto userDto){
+        FintechUser.FintechUserBuilder builder = FintechUser.builder();
+        builder.userId(generateUserId());
+        builder.phoneNumber(userDto.getPhoneNumber());
         builder.email(userDto.getEmail());
         builder.password(passwordEncoder.encode(userDto.getPassword()));
         builder.role(userDto.getRole());
 
-        userRepository.save(builder.build());
-        return extract(userDto.getEmail(), "");
+        FintechUser save = userRepository.save(builder.build());
+        return extract(save.getEmail(), save.getUserId(), "");
     }
 
     public ReturnObj authenticateUser(AuthPayload authPayload){
@@ -42,10 +48,10 @@ public class AuthService {
                         authPayload.getPassword()
                 )
         );
-        var user = userRepository.findObsUserByEmailIgnoreCase(authPayload.getEmail())
+        var user = userRepository.findByEmailIgnoreCase(authPayload.getEmail())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found!"));
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        return extract(user.getEmail(), getToken(user.getEmail()));
+        return extract(user.getEmail(), "", getToken(user.getEmail()));
     }
 
     @Transactional(readOnly = true)
@@ -54,17 +60,16 @@ public class AuthService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 
-    public void deleteUser(Long id) {
-        FintechUser user = getUserById(id);
-        log.info("Deleting user: {}", user.getEmail());
-        userRepository.delete(user);
-    }
-
     private String getToken(String email){
         return jwtUtil.generateToken(email);
     }
-    private ReturnObj extract(String email, String token){
-        return new ReturnObj(email, token);
+    private ReturnObj extract(String email, String userId, String token){
+        return new ReturnObj(email, userId, token);
     }
 
+    private String generateUserId() {
+        long timestamp = System.currentTimeMillis();
+        String numericPart = String.valueOf(timestamp).substring(5);
+        return PREFIX + numericPart;
+    }
 }

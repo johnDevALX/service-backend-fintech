@@ -1,6 +1,6 @@
-package com.ekene.onlinebookstore.auth;
+package com.ekene.servicebackendfintech.auth;
 
-import com.ekene.onlinebookstore.user.model.ObsUser;
+import com.ekene.servicebackendfintech.user.model.FintechUser;
 import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -17,7 +17,7 @@ public class CustomUser implements UserDetails {
     private String password;
     private List<GrantedAuthority> authorities;
 
-    public CustomUser(ObsUser user){
+    public CustomUser(FintechUser user){
         email = user.getEmail();
         password = user.getPassword();
         authorities = Arrays.stream(user.getRole().split(",")).map(SimpleGrantedAuthority::new).collect(Collectors.toList());

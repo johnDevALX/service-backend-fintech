@@ -1,4 +1,4 @@
-package com.ekene.onlinebookstore.user.util;
+package com.ekene.servicebackendfintech.user.payload;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,5 +11,6 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ReturnObj {
     private String email;
+    private String userId;
     private String token;
 }
