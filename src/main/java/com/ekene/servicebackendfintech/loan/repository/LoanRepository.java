@@ -10,7 +10,7 @@ import java.util.List;
 
 @Repository
 public interface LoanRepository extends JpaRepository<Loan, Long> {
-    @Query("SELECT l FROM Loan l WHERE l.userEmail = :userEmail ORDER BY l.createdAt DESC")
+    @Query("SELECT l FROM Loan l WHERE l.userEmail = :userEmail ORDER BY l.createdAt DESC limit 1")
     Loan findMostRecentLoanByUserEmail(@Param("userEmail") String userEmail);
     Loan findByUserEmailEqualsIgnoreCaseAndTransactionReferenceEqualsIgnoreCase(String email, String transactionReference);
 

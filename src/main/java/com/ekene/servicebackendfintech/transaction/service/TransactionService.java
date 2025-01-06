@@ -40,7 +40,10 @@ public class TransactionService {
                 .userId(userId)
                 .transactionReference(request.getTransactionReference()).build();
 
-
+        if (ifItsRepaid){
+            transaction.setDisbursementReference(request.getTransactionReference());
+            transaction.setTransactionReference("RPT" + LocalDateTime.now());
+        }
 
         log.info("Recording transaction for loan: {}", request.getTransactionReference());
         transactionRepository.save(transaction);

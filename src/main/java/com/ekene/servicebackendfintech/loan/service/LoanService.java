@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -33,13 +34,20 @@ public class LoanService {
     private final LoanRepository loanRepository;
     private final UserRepository userRepository;
     private final TransactionService transactionService;
+    private static final List<LoanStatus> UNALLOWED_STATUS = List.of(LoanStatus.COMPLETED, LoanStatus.REJECTED);
 
     public ResponseEntity<ApiResponse<LoanResponse>> applyForLoan(LoanRequest request, String userEmail) {
         FintechUser user = getFintechUser(userEmail);
+        Loan checkIfLoanExist = loanRepository.getLoanByTransactionReferenceIgnoreCase(request.getTransactionReference());
+        if (checkIfLoanExist != null){
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new ApiResponse<>("Transaction reference already exist!",
+                            LocalDateTime.now(), null));
+        }
+
 
         Loan mostRecentLoanByUserEmail = loanRepository.findMostRecentLoanByUserEmail(userEmail);
-        if (mostRecentLoanByUserEmail != null && !mostRecentLoanByUserEmail.getProgressStatus().equals(LoanStatus.COMPLETED)){
-            Loan rejectedLoan = Loan.builder()
+        if (mostRecentLoanByUserEmail != null && !UNALLOWED_STATUS.contains(mostRecentLoanByUserEmail.getProgressStatus())) {            Loan rejectedLoan = Loan.builder()
                     .userEmail(userEmail)
                     .principalAmount(request.getAmount())
                     .transactionReference(request.getTransactionReference())
