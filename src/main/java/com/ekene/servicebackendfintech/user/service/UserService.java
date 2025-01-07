@@ -55,9 +55,15 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public FintechUser getUserById(Long id) {
-        return userRepository.findById(id)
+    public FintechUser getUserByEmail(String userEmail) {
+        return userRepository.findByEmailIgnoreCase(userEmail)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    }
+
+    public void deleteUserByEmail(String userEmail) {
+        FintechUser user = userRepository.findByEmailIgnoreCase(userEmail)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        userRepository.delete(user);
     }
 
     private String getToken(String email){
